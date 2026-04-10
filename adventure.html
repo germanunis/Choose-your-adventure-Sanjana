@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Many Lives of Sanjana Acharya — A Choose Your Own Adventure</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Caveat:wght@400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #FAF6ED;
+  --paper-dark: #F0E8D5;
+  --paper-darker: #E4D5B7;
+  --ink: #2A2118;
+  --ink-mid: #6B5744;
+  --ink-light: #A89070;
+  --red: #B84C3A;
+  --red-light: #F0D4CE;
+  --teal: #3A7A6E;
+  --teal-light: #C8E4DF;
+  --gold: #C4872A;
+  --gold-light: #F5E4BC;
+  --purple: #5C4A7A;
+  --purple-light: #E0D8F0;
+  --border: #D4BC94;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  font-family: 'Lora', serif;
+  color: var(--ink);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Paper texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(180,150,100,0.07) 28px),
+    repeating-linear-gradient(90deg, transparent, transparent 27px, rgba(180,150,100,0.04) 28px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Torn paper edge top */
+body::after {
+  content: '';
+  position: fixed; top: 0; left: 0; right: 0; height: 8px;
+  background: var(--paper);
+  z-index: 200;
+  clip-path: polygon(0 0,2% 100%,4% 20%,6% 80%,8% 10%,10% 90%,12% 30%,14% 70%,16% 15%,18% 85%,20% 25%,22% 75%,24% 5%,26% 95%,28% 40%,30% 60%,32% 20%,34% 80%,36% 10%,38% 90%,40% 30%,42% 70%,44% 15%,46% 85%,48% 5%,50% 95%,52% 40%,54% 60%,56% 20%,58% 80%,60% 10%,62% 90%,64% 30%,66% 70%,68% 15%,70% 85%,72% 5%,74% 95%,76% 40%,78% 60%,80% 20%,82% 80%,84% 10%,86% 90%,88% 30%,90% 70%,92% 15%,94% 85%,96% 5%,98% 95%,100% 0);
+}
+
+/* ── PAGE SYSTEM ── */
+.page {
+  display: none;
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  animation: pageFlip 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.page.active { display: block; }
+
+@keyframes pageFlip {
+  from { opacity: 0; transform: translateX(30px) rotateY(8deg); }
+  to   { opacity: 1; transform: translateX(0) rotateY(0); }
+}
+
+.page-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 4rem 2rem 6rem;
+}
+
+/* ── PAGE NUMBER ── */
+.page-number {
+  font-family: 'Caveat', cursive;
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  text-align: center;
+  padding-top: 2.5rem;
+  padding-bottom: 0;
+  letter-spacing: 0.05em;
+}
+
+/* ── CHAPTER DECORATION ── */
+.chapter-mark {
+  font-family: 'Caveat', cursive;
+  font-size: 0.85rem;
+  color: var(--ink-light);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  display: flex; align-items: center; gap: 10px;
+}
+.chapter-mark::before, .chapter-mark::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* ── DROPCAP ── */
+.dropcap::first-letter {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 4.5rem;
+  font-weight: 700;
+  float: left;
+  line-height: 0.75;
+  margin: 0.1em 0.12em 0 0;
+  color: var(--red);
+}
+
+/* ── TITLES ── */
+h1.book-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  line-height: 1.15;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+h1.book-title em { color: var(--red); font-style: italic; }
+
+h2.page-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  line-height: 1.25;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+h2.page-title em { color: var(--red); font-style: italic; }
+
+h3.section-head {
+  font-family: 'Caveat', cursive;
+  font-size: 1.5rem;
+  color: var(--ink-mid);
+  margin: 1.5rem 0 0.5rem;
+}
+
+/* ── BODY TEXT ── */
+.body-text {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: var(--ink-mid);
+  margin-bottom: 1.2rem;
+}
+.body-text strong { color: var(--ink); font-weight: 600; }
+.body-text em { color: var(--red); font-style: italic; }
+
+/* ── HAND-DRAWN DIVIDER ── */
+.squiggle {
+  display: block;
+  margin: 1.8rem auto;
+  overflow: visible;
+}
+
+/* ── CHOICE BUTTONS ── */
+.choices {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.choice-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 1rem 1.4rem;
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.2s;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  font-family: 'Lora', serif;
+}
+
+.choice-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 4px;
+  border: 1.5px solid var(--border);
+  background: var(--paper-dark);
+  transition: all 0.2s;
+  /* hand-drawn wobble via SVG filter */
+}
+.choice-btn:hover::before {
+  background: var(--paper-darker);
+  border-color: var(--ink-mid);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--border);
+}
+
+.choice-arrow {
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  color: var(--red);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  padding-top: 1px;
+}
+.choice-text {
+  position: relative; z-index: 1;
+}
+.choice-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  font-family: 'Caveat', cursive;
+  display: block;
+  margin-bottom: 2px;
+}
+.choice-main {
+  font-size: 1rem;
+  color: var(--ink);
+  line-height: 1.4;
+  font-style: italic;
+}
+.choice-sub {
+  font-size: 0.82rem;
+  color: var(--ink-mid);
+  margin-top: 2px;
+  font-style: normal;
+}
+
+/* ── BACK BUTTON ── */
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Caveat', cursive;
+  font-size: 1rem;
+  color: var(--ink-light);
+  background: none; border: none; cursor: pointer;
+  padding: 0.5rem 0;
+  margin-bottom: 2rem;
+  transition: color 0.2s;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.back-btn:hover { color: var(--red); }
+
+/* ── ILLUSTRATED ELEMENTS ── */
+.illustration {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+/* ── STAT CARDS ── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.stat-card {
+  background: var(--paper-dark);
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  padding: 1rem;
+  text-align: center;
+  position: relative;
+  transition: transform 0.2s;
+}
+.stat-card:hover { transform: rotate(-0.5deg) scale(1.02); }
+.stat-card::after {
+  content: '';
+  position: absolute; inset: 3px;
+  border: 1px dashed var(--border);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.stat-num {
+  font-family: 'Caveat', cursive;
+  font-size: 2.2rem;
+  color: var(--red);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-label { font-size: 0.78rem; color: var(--ink-mid); line-height: 1.4; }
+
+/* ── HANDWRITTEN NOTE ── */
+.handwritten-note {
+  background: var(--gold-light);
+  border: 1.5px solid var(--gold);
+  border-radius: 4px;
+  padding: 1.2rem 1.5rem;
+  margin: 1.5rem 0;
+  transform: rotate(-0.6deg);
+  box-shadow: 3px 3px 0 rgba(196,135,42,0.2);
+  position: relative;
+}
+.handwritten-note::before {
+  content: '📌';
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  font-size: 1.2rem;
+}
+.handwritten-note p {
+  font-family: 'Caveat', cursive;
+  font-size: 1.15rem;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+/* ── TIMELINE ── */
+.timeline { margin: 1.5rem 0; }
+.timeline-item {
+  display: flex; gap: 1rem;
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 11px; top: 24px;
+  width: 1px; bottom: -12px;
+  background: repeating-linear-gradient(to bottom, var(--border) 0, var(--border) 4px, transparent 4px, transparent 8px);
+}
+.timeline-item:last-child::before { display: none; }
+.timeline-dot {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--paper-dark);
+  border: 2px solid var(--red);
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; color: var(--red);
+}
+.timeline-content {}
+.timeline-date { font-family: 'Caveat', cursive; font-size: 0.9rem; color: var(--ink-light); }
+.timeline-title { font-size: 1rem; font-weight: 600; color: var(--ink); margin: 2px 0; }
+.timeline-desc { font-size: 0.88rem; color: var(--ink-mid); line-height: 1.6; }
+
+/* ── SKILL TAGS ── */
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+.tag {
+  padding: 0.3rem 0.8rem;
+  border-radius: 2px;
+  font-size: 0.82rem;
+  font-family: 'Caveat', cursive;
+  font-size: 1rem;
+  border: 1.5px solid;
+  transition: transform 0.15s;
+}
+.tag:hover { transform: rotate(1deg) scale(1.05); }
+.tag-red { background: var(--red-light); border-color: var(--red); color: var(--red); }
+.tag-teal { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
+.tag-gold { background: var(--gold-light); border-color: var(--gold); color: var(--gold); }
+.tag-purple { background: var(--purple-light); border-color: var(--purple); color: var(--purple); }
+
+/* ── QUOTE ── */
+.pull-quote {
+  border-left: 3px solid var(--red);
+  padding: 0.8rem 1.5rem;
+  margin: 1.5rem 0;
+  background: var(--paper-dark);
+}
+.pull-quote p {
+  font-family: 'Libre Baskerville', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--ink);
+  line-height: 1.7;
+}
+.pull-quote cite { font-size: 0.82rem; color: var(--ink-light); font-style: normal; display: block; margin-top: 0.5rem; }
+
+/* ── EPILOGUE ── */
+.epilogue-seal {
+  text-align: center;
+  margin: 2rem 0;
+}
+.seal-circle {
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  border: 3px solid var(--red);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--red-light);
+  position: relative;
+}
+.seal-circle::after {
+  content: '';
+  position: absolute; inset: 6px;
+  border-radius: 50%;
+  border: 1px dashed var(--red);
+}
+.seal-initials {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 2rem;
+  color: var(--red);
+  font-weight: 700;
+  position: relative; z-index: 1;
+}
+.seal-sub {
+  font-family: 'Caveat', cursive;
+  font-size: 0.8rem;
+  color: var(--red);
+  position: relative; z-index: 1;
+}
+
+.epilogue-letter {
+  background: var(--paper-dark);
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  padding: 2rem 2.5rem;
+  margin: 1.5rem 0;
+  position: relative;
+  box-shadow: 4px 4px 0 var(--paper-darker);
+}
+.epilogue-letter::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--red), var(--gold), var(--teal));
+}
+.letter-salutation {
+  font-family: 'Caveat', cursive;
+  font-size: 1.4rem;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+.letter-body {
+  font-size: 0.98rem;
+  line-height: 1.9;
+  color: var(--ink-mid);
+  margin-bottom: 1rem;
+}
+.letter-body strong { color: var(--ink); }
+.letter-sign {
+  font-family: 'Caveat', cursive;
+  font-size: 1.6rem;
+  color: var(--ink);
+  margin-top: 1.5rem;
+}
+
+/* ── CONTACT STRIP ── */
+.contact-strip {
+  display: flex; flex-wrap: wrap; gap: 0.8rem;
+  margin: 1.5rem 0;
+  padding: 1.2rem;
+  background: var(--paper-dark);
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+}
+.contact-item {
+  font-family: 'Caveat', cursive;
+  font-size: 1.05rem;
+  color: var(--ink-mid);
+  display: flex; align-items: center; gap: 6px;
+}
+.contact-item a { color: var(--red); text-decoration: none; }
+.contact-item a:hover { text-decoration: underline; }
+
+/* ── COVER ── */
+.cover-wrapper {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  position: relative;
+}
+
+.cover-ornament {
+  font-family: 'Caveat', cursive;
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.cover-border {
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  padding: 3rem 2.5rem;
+  max-width: 560px;
+  width: 100%;
+  position: relative;
+  background: var(--paper-dark);
+}
+.cover-border::before, .cover-border::after {
+  content: '❧';
+  position: absolute;
+  font-size: 1.2rem;
+  color: var(--border);
+}
+.cover-border::before { top: 12px; left: 16px; }
+.cover-border::after { bottom: 12px; right: 16px; transform: rotate(180deg); }
+
+.cover-series {
+  font-family: 'Caveat', cursive;
+  font-size: 1rem;
+  color: var(--ink-light);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.8rem;
+}
+.cover-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 0.6rem;
+}
+.cover-title em { color: var(--red); font-style: italic; }
+.cover-subtitle {
+  font-family: 'Lora', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink-mid);
+  margin-bottom: 1.5rem;
+}
+.cover-author {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.1rem;
+  color: var(--ink);
+  margin-bottom: 0.3rem;
+}
+.cover-role {
+  font-family: 'Caveat', cursive;
+  font-size: 1rem;
+  color: var(--ink-light);
+}
+
+.cover-instruction {
+  margin-top: 2.5rem;
+  font-family: 'Caveat', cursive;
+  font-size: 1.2rem;
+  color: var(--ink-mid);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+.start-btn {
+  margin-top: 1.5rem;
+  background: var(--red);
+  color: white;
+  border: none;
+  padding: 0.9rem 2.5rem;
+  font-family: 'Lora', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 3px 3px 0 rgba(184,76,58,0.3);
+}
+.start-btn:hover {
+  background: #9a3d2d;
+  transform: translate(-1px,-1px);
+  box-shadow: 4px 4px 0 rgba(184,76,58,0.3);
+}
+
+/* ── READING PROGRESS ── */
+#progress {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: linear-gradient(90deg, var(--red), var(--gold));
+  z-index: 300;
+  transition: width 0.3s;
+}
+
+/* ── BREADCRUMB ── */
+#breadcrumb {
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  font-family: 'Caveat', cursive;
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  background: rgba(250,246,237,0.9);
+  padding: 0.3rem 0.8rem;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: none;
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="breadcrumb"></div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE: COVER
+════════════════════════════════════════════ -->
+<div class="page active" id="p-cover">
+  <div class="cover-wrapper">
+    <div class="cover-ornament">✦ &nbsp; A Career in Stories &nbsp; ✦</div>
+
+    <div class="cover-border">
+      <p class="cover-series">Vol. I — The Professional Edition</p>
+
+      <h1 class="cover-title">The Many Lives of<br><em>Sanjana Acharya</em></h1>
+      <p class="cover-subtitle">A Choose Your Own Adventure</p>
+
+      <svg class="squiggle" width="160" height="18" viewBox="0 0 160 18">
+        <path d="M5 9 C15 2,25 16,35 9 C45 2,55 16,65 9 C75 2,85 16,95 9 C105 2,115 16,125 9 C135 2,145 16,155 9" stroke="#C4872A" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <circle cx="5" cy="9" r="2.5" fill="#C4872A"/>
+        <circle cx="155" cy="9" r="2.5" fill="#C4872A"/>
+      </svg>
+
+      <p class="cover-author">Sanjana Acharya</p>
+      <p class="cover-role">Project Manager · PMO Consultant · MBA Candidate</p>
+
+      <div style="margin-top:1.5rem; font-size:0.82rem; font-family:'Caveat',cursive; color:var(--ink-light); line-height:1.8;">
+        Nürtingen, Germany &nbsp;·&nbsp; acharyasanjanade@gmail.com<br>+49 176 46681109
+      </div>
+    </div>
+
+    <p class="cover-instruction">↓ &nbsp; Turn to the first page &nbsp; ↓</p>
+    <button class="start-btn" onclick="go('p-opening')">Open the book →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE: OPENING — WHO ARE YOU?
+════════════════════════════════════════════ -->
+<div class="page" id="p-opening">
+  <div class="page-number">Page 1</div>
+  <div class="page-inner">
+    <button class="back-btn" onclick="go('p-cover')">← Back to cover</button>
+
+    <div class="chapter-mark">Prologue</div>
+
+    <h2 class="page-title">You have arrived at a crossroads.</h2>
+
+    <svg class="squiggle" width="200" height="20" viewBox="0 0 200 20">
+      <path d="M10 10 C25 3,40 17,55 10 C70 3,85 17,100 10 C115 3,130 17,145 10 C160 3,175 17,190 10" stroke="#D4BC94" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-dasharray="4 3"/>
+    </svg>
+
+    <p class="body-text dropcap">You are holding something unusual. Not a CV — those are easy to ignore. Not a cover letter — those are easier still. This is a story, and like all good stories, where it takes you depends entirely on who you are.</p>
+
+    <p class="body-text">The woman who wrote it is called Sanjana. She manages projects the way a good author manages plot — with structure, intention, and the quiet confidence that everything will hold together in the end.</p>
+
+    <p class="body-text">But you didn't come here for the narrator's voice. You came here for <em>your</em> chapter. So tell me —</p>
+
+    <div class="handwritten-note">
+      <p>Who are you, dear reader?<br>Choose wisely. Each path leads somewhere different.</p>
+    </div>
+
+    <div class="choices">
+      <button class="choice-btn" onclick="go('p-recruiter')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to page 4</span>
+          <span class="choice-main">"I am an HR professional or recruiter"</span>
+          <span class="choice-sub">I need the facts, fast, in the right order.</span>
+        </span>
+      </button>
+      <button class="choice-btn" onclick="go('p-hiring-manager')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to page 12</span>
+          <span class="choice-main">"I am a hiring manager — PMO, strategy, or transformation"</span>
+          <span class="choice-sub">I want to understand how she thinks and what she can actually do.</span>
+        </span>
+      </button>
+      <button class="choice-btn" onclick="go('p-curious')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to page 20</span>
+          <span class="choice-main">"I'm just curious about who Sanjana is as a person"</span>
+          <span class="choice-sub">The CV tells me nothing. I want the human behind the highlights.</span>
+        </span>
+      </button>
+      <button class="choice-btn" onclick="go('p-commerzbank')" style="border-color:var(--red-light);">
+        <span class="choice-arrow" style="color:var(--gold);">★</span>
+        <span class="choice-text">
+          <span class="choice-label" style="color:var(--gold);">Special chapter</span>
+          <span class="choice-main">"I am from Commerzbank"</span>
+          <span class="choice-sub">This chapter was written specifically for you.</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PATH A: HR / RECRUITER
+════════════════════════════════════════════ -->
+<div class="page" id="p-recruiter">
+  <div class="page-number">Page 4</div>
+  <div class="page-inner">
+    <button class="back-btn" onclick="go('p-opening')">← Back to crossroads</button>
+    <div class="chapter-mark">Chapter I — The Essentials</div>
+    <h2 class="page-title">Everything you need. <em>Nothing you don't.</em></h2>
+
+    <svg class="squiggle" width="180" height="18" viewBox="0 0 180 18">
+      <path d="M5 9 C18 2,31 16,44 9 C57 2,70 16,83 9 C96 2,109 16,122 9 C135 2,148 16,161 9 C168 5,172 9,175 9" stroke="#B84C3A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    </svg>
+
+    <p class="body-text">You are a professional. You have a pile of applications and not enough time. Here is Sanjana's story, told efficiently — the way she'd present it to any stakeholder who's short on patience.</p>
+
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">years of PMO & project experience</div></div>
+      <div class="stat-card"><div class="stat-num">27</div><div class="stat-label">countries of market research (DEKRA)</div></div>
+      <div class="stat-card"><div class="stat-num">30%</div><div class="stat-label">reporting effort saved via Power BI</div></div>
+      <div class="stat-card"><div class="stat-num">176</div><div class="stat-label">active programs managed (Eberspächer)</div></div>
+    </div>
+
+    <h3 class="section-head">Where she's worked</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot">✦</div>
+        <div class="timeline-content">
+          <div class="timeline-date">Jun 2025 – present</div>
+          <div class="timeline-title">Werkstudent PM & Process Management — Purem by Eberspächer, Esslingen</div>
+          <div class="timeline-desc">PMO digitalisation, AI training creation (Synthesia/Articulate), KPI tracking across 7 BUs & 176 programs, automated project assessments.</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">✦</div>
+        <div class="timeline-content">
+          <div class="timeline-date">May 2024 – Jan 2025</div>
+          <div class="timeline-title">Werkstudent Strategy & Business Development — DEKRA GmbH, Stuttgart</div>
+          <div class="timeline-desc">PTI market analysis across 27 countries, JIRA agile PM, M&A opportunity analysis, risk mitigation strategies, cross-border workshops.</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">✦</div>
+        <div class="timeline-content">
+          <div class="timeline-date">May 2021 – Aug 2023</div>
+          <div class="timeline-title">Project & Operations Coordinator — AEMS, India</div>
+          <div class="timeline-desc">SAP C/4HANA implementation, Salesforce CRM, Power BI dashboards (−30% reporting effort), international university partnerships.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-head">Education</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot">✦</div>
+        <div class="timeline-content">
+          <div class="timeline-date">Oct 2023 – present</div>
+          <div class="timeline-title">MBA — International Management, HfWU Nürtingen-Geislingen</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">✦</div>
+        <div class="timeline-content">
+          <div class="timeline-date">2018 – 2021</div>
+          <div class="timeline-title">BSc Statistics — St. Xavier's College, Ahmedabad</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-head">Key skills</h3>
+    <div class="tag-cloud">
+      <span class="tag tag-red">PMO & Project Governance</span>
+      <span class="tag tag-teal">Power BI</span>
+      <span class="tag tag-gold">SAP C/4HANA</span>
+      <span class="tag tag-purple">Salesforce CRM</span>
+      <span class="tag tag-red">JIRA</span>
+      <span class="tag tag-teal">Risk Management</span>
+      <span class="tag tag-gold">Agile</span>
+      <span class="tag tag-purple">KPI Dashboards</span>
+      <span class="tag tag-red">Stakeholder Comms</span>
+      <span class="tag tag-teal">Process Optimisation</span>
+      <span class="tag tag-gold">German (Business Fluent)</span>
+      <span class="tag tag-purple">English (Native)</span>
+    </div>
+
+    <div class="handwritten-note" style="transform:rotate(0.4deg); margin-top:2rem;">
+      <p>📍 Based in Nürtingen · Willing to relocate · Available now<br>ERASMUS Scholar · Gold Medal IEO · AEMS Star Performer 2022</p>
+    </div>
+
+    <div class="choices">
+      <button class="choice-btn" onclick="go('p-recruiter-contact')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Continue to page 6</span>
+          <span class="choice-main">I'd like to get in touch</span>
+        </span>
+      </button>
+      <button class="choice-btn" onclick="go('p-hiring-manager')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to page 12</span>
+          <span class="choice-main">I want to understand how she thinks, not just what she's done</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="p-recruiter-contact">
+  <div class="page-number">Page 6</div>
+  <div class="page-inner">
+    <button class="back-btn" onclick="go('p-recruiter')">← Back to page 4</button>
+    <div class="chapter-mark">Chapter I — End</div>
+    <h2 class="page-title">You've reached the end of <em>this chapter.</em></h2>
+
+    <p class="body-text">You now have the facts. The numbers check out. The experience is real, the progression is deliberate, and the person behind the CV is someone who takes their work seriously enough to turn their application into a book.</p>
+
+    <div class="pull-quote">
+      <p>"Self-organised, analytically strong, and solution oriented. Willing to relocate for the right opportunity."</p>
+      <cite>— Sanjana Acharya</cite>
+    </div>
+
+    <p class="body-text">If you'd like to continue the story together, here is where you can find her:</p>
+
+    <div class="contact-strip">
+      <div class="contact-item">✉ <a href="mailto:acharyasanjanade@gmail.com">acharyasanjanade@gmail.com</a></div>
+      <div class="contact-item">☎ +49 176 46681109</div>
+      <div class="contact-item">↗ <a href="https://linkedin.com/in/sanjana-acharya" target="_blank">linkedin.com/in/sanjana-acharya</a></div>
+      <div class="contact-item">📍 Nürtingen, Germany</div>
+    </div>
+
+    <div class="choices">
+      <button class="choice-btn" onclick="go('p-opening')">
+        <span class="choice-arrow">↩</span>
+        <span class="choice-text">
+          <span class="choice-label">Return to page 1</span>
+          <span class="choice-main">Explore a different path</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PATH B: HIRING MANAGER
+════════════════════════════════════════════ -->
+<div class="page" id="p-hiring-manager">
+  <div class="page-number">Page 12</div>
+  <div class="page-inner">
+    <button class="back-btn" onclick="go('p-opening')">← Back to crossroads</button>
+    <div class="chapter-mark">Chapter II — The Method</div>
+    <h2 class="page-title">How she <em>actually thinks.</em></h2>
+
+    <svg class="squiggle" width="180" height="18" viewBox="0 0 180 18">
+      <path d="M5 9 C18 2,31 16,44 9 C57 2,70 16,83 9 C96 2,109 16,122 9 C135 2,148 16,161 9" stroke="#3A7A6E" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    </svg>
+
+    <p class="body-text dropcap">You don't need a list of tools. You can read those in thirty seconds on any CV. What you need to know is whether this person solves problems the way your team needs them solved — before they get expensive, before they surprise you, before someone has to clean up the mess.</p>
+
+    <p class="body-text">Sanjana was trained as a statistician. This matters more than it sounds. It means she sees a dataset not as a spreadsheet but as a set of questions waiting to be asked. It means she built KPI dashboards at AEMS not because she was asked to, but because she noticed the reporting was taking 30% more time than it needed to.</p>
+
+    <div class="choices" style="margin-top:0; margin-bottom:1.5rem;">
+      <button class="choice-btn" onclick="go('p-hm-projects')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to page 13</span>
+          <span class="choice-main">Show me a specific project — how did she handle it?</span>
+        </span>
+      </button>
+      <button class="choice-btn" onclick="go('p-hm-approach')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to page 15</span>
+          <span class="choice-main">Tell me about her approach to risk and stakeholders</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="p-hm-projects">
+  <div class="page-number">Page 13</div>
+  <div class="page-inner">
+    <button class="back-btn" onclick="go('p-hiring-manager')">← Back to page 12</button>
+    <div class="chapter-mark">Chapter II — Project Deep Dive</div>
+    <h2 class="page-title">The DEKRA chapter: <em>27 markets, one conclusion.</em></h2>
+
+    <p class="body-text">In 2024, Sanjana joined DEKRA's strategy team in Stuttgart. Her task: analyse the Periodic Technical Inspection (PTI) market for vehicles across 27 countries across the CEEMEA region, and turn it into something actionable.</p>
+
+    <p class="body-text">She didn't just produce a report. She mapped regulatory barriers, identified M&A and joint venture opportunities, ran cross-border workshops with international team members, and monitored risks in DEKRA's existing operations. She built agile project plans in JIRA, coordinated milestones across time zones, and helped set up DEKRA's organisational structure abroad in line with local legislation.</p>
+
+    <div class="pull-quote">
+      <p>"She didn't just tell us what the market looked like. She told us what to do about it."</p>
+      <cite>— How her manager might describe it</cite>
+    </div>
+
+    <p class="body-text">The Eberspächer chapter adds a different flavour: she took a PMO department mid-digital-transformation and helped automate it — creating AI-powered training courses with Synthesia and Articulate that replaced in-person sessions across 7 business units. She tracked 176 programs, maintained master data, supported automated project assessments, and contributed to the monthly CDB rollout.</p>
+
+    <p class="body-text">What connects these stories is not the industries. It's the pattern: <strong>she arrives, she understands the system, she improves it.</strong></p>
+
+    <div class="choices">
+      <button class="choice-btn" onclick="go('p-hm-approach')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to page 15</span>
+          <span class="choice-main">Now tell me about risk management and stakeholder work</span>
+        </span>
+      </button>
+      <button class="choice-btn" onclick="go('p-recruiter-contact')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Skip to page 6</span>
+          <span class="choice-main">I've heard enough — I'd like to get in touch</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="p-hm-approach">
+  <div class="page-number">Page 15</div>
+  <div class="page-inner">
+    <button class="back-btn" onclick="go('p-hiring-manager')">← Back to page 12</button>
+    <div class="chapter-mark">Chapter II — Working Style</div>
+    <h2 class="page-title">Risk, people, <em>and the space between.</em></h2>
+
+    <p class="body-text">Here is what separates a project coordinator from a project manager: the coordinator tracks what's happening. The manager sees what's coming.</p>
+
+    <p class="body-text">Sanjana has tracked escalations, documented change requests, monitored risk registers, and built mitigation strategies — at DEKRA, at Eberspächer, and at AEMS. But she'll be the first to tell you that none of that means anything if the people in the room don't trust you enough to flag the problem early.</p>
+
+    <p class="body-text">She runs workshops. She translates between technical teams and non-technical stakeholders. She has worked across India, Germany, the UK, North America, Australia, and 27 markets in between — which means she has learned that <strong>most problems are not technical. They are human. And she is very good with humans.</strong></p>
+
+    <div class="tag-cloud">
+      <span class="tag tag-teal">Risk Management</span>
+      <span class="tag tag-red">Stakeholder Workshops</span>
+      <span class="tag tag-gold">Escalation Handling</span>
+      <span class="tag tag-purple">Cross-Cultural Communication</span>
+      <span class="tag tag-teal">Agile / JIRA</span>
+      <span class="tag tag-red">Budget Controlling</span>
+      <span class="tag tag-gold">Soll-/Ist Analysis</span>
+    </div>
+
+    <div class="choices">
+      <button class="choice-btn" onclick="go('p-recruiter-contact')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to page 6</span>
+          <span class="choice-main">I'd like to get in touch</span>
+        </span>
+      </button>
+      <button class="choice-btn" onclick="go('p-commerzbank')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Special chapter</span>
+          <span class="choice-main">I'm from Commerzbank — take me to the special chapter</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PATH C: CURIOUS / PERSONAL
+════════════════════════════════════════════ -->
+<div class="page" id="p-curious">
+  <div class="page-number">Page 20</div>
+  <div class="page-inner">
+    <button class="back-btn" onclick="go('p-opening')">← Back to crossroads</button>
+    <div class="chapter-mark">Chapter III — The Person</div>
+    <h2 class="page-title">The parts that don't fit <em>on a CV.</em></h2>
+
+    <svg class="squiggle" width="180" height="18" viewBox="0 0 180 18">
+      <path d="M5 9 C18 2,31 16,44 9 C57 2,70 16,83 9 C96 2,109 16,122 9 C135 2,148 16,161 9" stroke="#C4872A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    </svg>
+
+    <p class="body-text dropcap">She was born in India, studied statistics in Ahmedabad, won a gold medal in an international English olympiad at school, tutored economics students through university, and wrote academic content for the Blind People's Association because someone needed to and she knew how.</p>
+
+    <p class="body-text">Then she moved to Germany. Alone, in a new language, in a country she didn't grow up in — and enrolled in a Masters programme, found work at two major German companies, and became business fluent in a language that is genuinely difficult. She did all of this while cooking elaborate meals, reading voraciously, and occasionally winning at billiards.</p>
+
+    <div class="choices" style="margin-top:0; margin-bottom:1.5rem;">
+      <button class="choice-btn" onclick="go('p-curious-values')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to page 22</span>
+          <span class="choice-main">What does she actually care about?</span>
+        </span>
+      </button>
+      <button class="choice-btn" onclick="go('p-curious-outside')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to page 24</span>
+          <span class="choice-main">Who is she outside of work?</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="p-curious-values">
+  <div class="page-number">Page 22</div>
+  <div class="page-inner">
+    <button class="back-btn" onclick="go('p-curious')">← Back to page 20</button>
+    <div class="chapter-mark">Chapter III — Values</div>
+    <h2 class="page-title">What she <em>actually</em> cares about.</h2>
+
+    <p class="body-text">She cares about things working. Not in a perfectionist, paralysing way — in the way that a good engineer cares about a bridge: it has to hold, it has to be efficient, and ideally it should be a little bit beautiful.</p>
+
+    <p class="body-text">She cares about people understanding things. This is why she builds training materials, runs workshops, creates dashboards instead of sending raw data. She has a gift for translating complexity into clarity, and she uses it constantly.</p>
+
+    <p class="body-text">She cares about doing something that matters at scale. Working across 27 countries at DEKRA, touching 176 programs at Eberspächer — she is not someone who wants a small life or a small role. She wants to be in the room where the decisions are made, and she wants to be useful there.</p>
+
+    <div class="pull-quote">
+      <p>"Good project management, like good cooking, is invisible when it works."</p>
+      <cite>— Sanjana Acharya</cite>
+    </div>
+
+    <div class="choices">
+      <button class="choice-btn" onclick="go('p-curious-outside')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to page 24</span>
+          <span class="choice-main">Tell me about her outside of work too</span>
+        </span>
+      </button>
+      <button class="choice-btn" onclick="go('p-recruiter-contact')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to page 6</span>
+          <span class="choice-main">I've heard enough — I'd like to get in touch</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="p-curious-outside">
+  <div class="page-number">Page 24</div>
+  <div class="page-inner">
+    <button class="back-btn" onclick="go('p-curious')">← Back to page 20</button>
+    <div class="chapter-mark">Chapter III — Off the Clock</div>
+    <h2 class="page-title">The life between <em>the projects.</em></h2>
+
+    <p class="body-text">She reads. Constantly, widely, and with opinions. The fact that this application is structured as a choose-your-own-adventure is not a coincidence — it reflects the way she moves through information: not linearly, but with curiosity and branching interest.</p>
+
+    <p class="body-text">She cooks. And not the way someone cooks because they live alone and have to — the way someone cooks because they enjoy transforming raw ingredients into something greater than the sum of their parts. She sees the parallel herself. She made an entire cookbook out of her career to prove it.</p>
+
+    <p class="body-text">She plays badminton. She plays billiards. She writes. She has spent years helping others — tutoring students, writing for people who couldn't write for themselves, volunteering time before she had much to spare.</p>
+
+    <div class="handwritten-note" style="transform:rotate(-0.5deg);">
+      <p>She is, in short, the kind of person who makes every room slightly more interesting and every team slightly more capable. You don't find that in the skills section.</p>
+    </div>
+
+    <div class="choices">
+      <button class="choice-btn" onclick="go('p-recruiter-contact')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to page 6</span>
+          <span class="choice-main">I'd like to get in touch with her</span>
+        </span>
+      </button>
+      <button class="choice-btn" onclick="go('p-opening')">
+        <span class="choice-arrow">↩</span>
+        <span class="choice-text">
+          <span class="choice-label">Return to page 1</span>
+          <span class="choice-main">Explore another path</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PATH D: COMMERZBANK SPECIAL
+════════════════════════════════════════════ -->
+<div class="page" id="p-commerzbank">
+  <div class="page-number">Special Chapter ✦</div>
+  <div class="page-inner">
+    <button class="back-btn" onclick="go('p-opening')">← Back to crossroads</button>
+    <div class="chapter-mark" style="color:var(--gold);">The Commerzbank Chapter</div>
+    <h2 class="page-title">You found <em>the special chapter.</em></h2>
+
+    <svg class="squiggle" width="200" height="18" viewBox="0 0 200 18">
+      <path d="M10 9 C25 2,40 16,55 9 C70 2,85 16,100 9 C115 2,130 16,145 9 C160 2,175 16,190 9" stroke="#C4872A" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    </svg>
+
+    <p class="body-text dropcap">This chapter was not written for everyone. It was written for one reader — someone who works at Commerzbank, or is reading on their behalf. If that's you: welcome. You were expected.</p>
+
+    <p class="body-text">Sanjana didn't apply to Commerzbank because of the name. She applied because of the specifics: the graduate programme's focus on digital transformation and international exposure, the data and risk tracks, and something she read that stopped her mid-scroll — <em>"Real people. Real stories. Real careers."</em></p>
+
+    <p class="body-text">That's not a tagline she skimmed past. That's a value she recognised.</p>
+
+    <div class="choices">
+      <button class="choice-btn" onclick="go('p-cb-fit')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to page 28</span>
+          <span class="choice-main">Why does she specifically fit Commerzbank?</span>
+        </span>
+      </button>
+      <button class="choice-btn" onclick="go('p-cb-epilogue')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to the epilogue</span>
+          <span class="choice-main">Take me straight to her letter</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="p-cb-fit">
+  <div class="page-number">Page 28</div>
+  <div class="page-inner">
+    <button class="back-btn" onclick="go('p-commerzbank')">← Back to special chapter</button>
+    <div class="chapter-mark">Commerzbank — The Case</div>
+    <h2 class="page-title">The ingredients that <em>match your kitchen.</em></h2>
+
+    <p class="body-text">Every kitchen has its own requirements. Here is why Sanjana's particular combination of skills, experience, and character fits Commerzbank's specifically.</p>
+
+    <div class="stat-row">
+      <div class="stat-card" style="background:var(--red-light); border-color:var(--red);">
+        <div class="stat-num">27</div>
+        <div class="stat-label">countries of strategic market analysis — international is not new to her</div>
+      </div>
+      <div class="stat-card" style="background:var(--teal-light); border-color:var(--teal);">
+        <div class="stat-num">4yr</div>
+        <div class="stat-label">PMO & digital transformation — the exact work your teams do</div>
+      </div>
+      <div class="stat-card" style="background:var(--gold-light); border-color:var(--gold);">
+        <div class="stat-num">2</div>
+        <div class="stat-label">languages — German (business fluent) + English (native)</div>
+      </div>
+    </div>
+
+    <p class="body-text">Your graduate programme values data. She was trained in statistics before she was trained in anything else. Your programme values digital transformation — she has automated reporting, built AI training courses, and implemented CRM systems from scratch. Your programme values risk awareness — she has maintained risk registers, built mitigation strategies, and managed escalations across organisations of hundreds of people.</p>
+
+    <p class="body-text">And she wants to be part of a culture that takes its people seriously. An 18-month programme with rotation, mentoring, and real responsibility from day one — that is exactly the environment in which she thrives.</p>
+
+    <div class="choices">
+      <button class="choice-btn" onclick="go('p-cb-epilogue')">
+        <span class="choice-arrow">→</span>
+        <span class="choice-text">
+          <span class="choice-label">Turn to the epilogue</span>
+          <span class="choice-main">I'm ready for the final page</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     EPILOGUE — COMMERZBANK
+════════════════════════════════════════════ -->
+<div class="page" id="p-cb-epilogue">
+  <div class="page-number">Epilogue</div>
+  <div class="page-inner">
+    <div class="chapter-mark" style="color:var(--gold);">The Final Page</div>
+    <h2 class="page-title">Every story needs <em>an ending.</em></h2>
+
+    <svg class="squiggle" width="200" height="20" viewBox="0 0 200 20">
+      <path d="M10 10 C25 3,40 17,55 10 C70 3,85 17,100 10 C115 3,130 17,145 10 C160 3,175 17,190 10" stroke="#C4872A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="10" cy="10" r="3" fill="#C4872A"/>
+      <circle cx="100" cy="10" r="2" fill="#C4872A"/>
+      <circle cx="190" cy="10" r="3" fill="#C4872A"/>
+    </svg>
+
+    <p class="body-text" style="text-align:center; font-style:italic; color:var(--ink-light);">
+      The best stories don't end. They become the beginning of something else.
+    </p>
+
+    <div class="epilogue-seal">
+      <div class="seal-circle">
+        <span class="seal-initials">SA</span>
+        <span class="seal-sub">2025</span>
+      </div>
+    </div>
+
+    <div class="epilogue-letter">
+      <p class="letter-salutation">Dear Commerzbank,</p>
+      <p class="letter-body">
+        I have been building towards this application for four years — though I didn't always know it was this application I was building towards.
+      </p>
+      <p class="letter-body">
+        I moved to Germany alone, in a language I was still learning, because I believed that the best version of my career was international and ambitious and worth the difficulty. I chose a Masters in International Management because I wanted theory to meet practice. I chose roles at DEKRA and Eberspächer because I wanted to work at the intersection of data, strategy, and transformation — which is, I notice, exactly where your graduate programme sits.
+      </p>
+      <p class="letter-body">
+        I am not applying because I need a job. I am applying because <strong>your programme is the specific next chapter I have been writing towards.</strong> The rotation model, the mentoring, the real responsibility from day one — I have been preparing for exactly this kind of environment, and I am ready for it.
+      </p>
+      <p class="letter-body">
+        I made this application into a choose-your-own-adventure because I believe the people who make it to this page — the epilogue, the final chapter — are the ones who were genuinely curious. I hope you are one of them. I hope we get to continue the story together.
+      </p>
+      <p class="letter-sign">With warmth and intention,<br>Sanjana Acharya</p>
+    </div>
+
+    <div class="contact-strip">
+      <div class="contact-item">✉ <a href="mailto:acharyasanjanade@gmail.com">acharyasanjanade@gmail.com</a></div>
+      <div class="contact-item">☎ +49 176 46681109</div>
+      <div class="contact-item">↗ <a href="https://linkedin.com/in/sanjana-acharya" target="_blank">linkedin.com/in/sanjana-acharya</a></div>
+    </div>
+
+    <div style="text-align:center; margin-top:3rem;">
+      <svg width="60" height="40" viewBox="0 0 60 40">
+        <path d="M5 35 C10 10, 20 5, 30 20 C40 35, 50 10, 55 5" stroke="#D4BC94" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <circle cx="30" cy="20" r="3" fill="#B84C3A"/>
+      </svg>
+      <p style="font-family:'Caveat',cursive; font-size:0.95rem; color:var(--ink-light); margin-top:0.5rem;">— fin —</p>
+    </div>
+
+    <div class="choices" style="margin-top:2rem;">
+      <button class="choice-btn" onclick="go('p-opening')">
+        <span class="choice-arrow">↩</span>
+        <span class="choice-text">
+          <span class="choice-label">Return to page 1</span>
+          <span class="choice-main">Read the book again from a different path</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const history = [];
+
+  function go(pageId) {
+    const current = document.querySelector('.page.active');
+    if (current) {
+      history.push(current.id);
+      current.classList.remove('active');
+    }
+    const next = document.getElementById(pageId);
+    if (next) {
+      next.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      updateProgress(pageId);
+      updateBreadcrumb(pageId);
+    }
+  }
+
+  const pageOrder = ['p-cover','p-opening','p-recruiter','p-recruiter-contact','p-hiring-manager','p-hm-projects','p-hm-approach','p-curious','p-curious-values','p-curious-outside','p-commerzbank','p-cb-fit','p-cb-epilogue'];
+
+  function updateProgress(pageId) {
+    const idx = pageOrder.indexOf(pageId);
+    const pct = idx < 0 ? 0 : Math.round((idx / (pageOrder.length - 1)) * 100);
+    document.getElementById('progress').style.width = pct + '%';
+  }
+
+  const breadcrumbNames = {
+    'p-cover': 'Cover',
+    'p-opening': 'Page 1',
+    'p-recruiter': 'Page 4 — HR',
+    'p-recruiter-contact': 'Page 6',
+    'p-hiring-manager': 'Page 12 — Manager',
+    'p-hm-projects': 'Page 13',
+    'p-hm-approach': 'Page 15',
+    'p-curious': 'Page 20 — Personal',
+    'p-curious-values': 'Page 22',
+    'p-curious-outside': 'Page 24',
+    'p-commerzbank': 'Special Chapter',
+    'p-cb-fit': 'Page 28',
+    'p-cb-epilogue': 'Epilogue',
+  };
+
+  function updateBreadcrumb(pageId) {
+    const bc = document.getElementById('breadcrumb');
+    if (pageId === 'p-cover') { bc.style.display = 'none'; return; }
+    bc.style.display = 'block';
+    bc.textContent = breadcrumbNames[pageId] || pageId;
+  }
+</script>
+</body>
+</html>
